@@ -1,16 +1,31 @@
 package util;
 
 import model.Accommodation;
+import model.Guest;
 import model.Host;
 import model.User;
 
 import java.math.BigDecimal;
+import java.time.Period;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public interface FunctionUtil {
+
+    Function<List<User>, List<Guest>> getGuests = users -> users.stream()
+            .flatMap(u -> u.getRoles().stream())
+            .filter(u -> u instanceof Guest)
+            .map(g -> (Guest)g)
+            .collect(Collectors.toList());
+
+    Function<List<User>, List<Host>> getHosts = users -> users.stream()
+            .flatMap(u -> u.getRoles().stream())
+            .filter(u -> u instanceof Guest)
+            .map(h -> (Host)h)
+            .collect(Collectors.toList());
 
     /* Functional Implementation to get yearly gross of an accommodation */
     BiFunction<Accommodation, Integer, BigDecimal> getYearlyGrossOfAccommodation = (accommodation, year) ->
@@ -46,9 +61,6 @@ public interface FunctionUtil {
                 .map(accommodation -> new Pair<>(accommodation, getYearlyTopKAvarageRatingOfAccommodation.apply(accommodation,year)))
                 .sorted((p1, p2)-> (int) Math.ceil(p1.getValue()- p2.getValue())).limit(k)
                 .map(pair -> pair.getKey()).collect(Collectors.toList());
-
-//    TriFunction<List<User>, Integer, List<Host>> getTopKHighlyProfitableHostsOf = (users, year) -> users.stream()
-//            .flatMap(user -> user.getRoles().stream()).
 
 
 }
